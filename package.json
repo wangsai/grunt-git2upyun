@@ -1,7 +1,7 @@
 {
   "name": "grunt-git2upyun",
   "description": "Grunt plugin for uploading files managed by git to UPYUN.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/wangsai/grunt-git2upyun",
   "author": {
     "name": "wangsai",
