@@ -122,6 +122,19 @@ cleanpath:function(fullpath) {return fullpath.replace('ajax/lib/', '');}
 [Bootstrap中文网](http://www.bootcss.com)所维护的[开放CDN](http://open.bootcss.com)服务就是采用此Grunt插件将 cdnjs.com 的github仓库镜像到又拍云上，从而为国内用户提供更好的加速服务。
 
 
+## 问题和解决办法
+
+本插件采用 [gift](https://github.com/notatestuser/gift) 执行对 git 仓库的操作，例如，列出仓库内管理的所有文件 `git ls-files`。
+
+### 存在的问题
+
+gift 在执行 git 指令时采用的是 `child_process.exec` api，这个api依赖 `stdout` 获取指令的所有输出，麻烦的是，`stdout` 对于输出缓存有一个 200k 的限制，比如，执行 `git ls-files` 时，如果仓库中的文件数量非常巨大的话（在 cdnjs 项目中就出现了这个问题，对 cdnjs 仓库执行 `git ls-files` 时输出的文件列表超过了 7M ，因此每次都会报错）就会超出最大缓存的限制，这个问题通过用 `child_process.spawn` 替代 `child_process.exec` 即可解决。目前已经向 gift 项目反映了此问题，应该很快可以解决。
+
+### 当前的解决办法
+
+一般项目中包含的文件不会太多，上面的问题一般不会出现。而我们在 开放CDN 中遇到的问题目前是这样解决的：第一次向云服务器上传 cdnjs 中的文件时采用的是 FTP 方式，后续在每次与 cdnjs 同步的时候，新增/删除文件的数量比较小，不会超出缓存。这样就规避了上述问题。并且，FTP 工具会有队列、续传机制。
+
+
 ## 版权和协议
 
 本插件所有代码版权归 [Bootstrap中文网](http://www.bootcss.com) 所有，遵循 MIT 开源协议。

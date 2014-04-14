@@ -44,7 +44,7 @@ module.exports = function(grunt) {
 
     var localRevision,
       serverRevision,
-      reversionFile = path.join(options.root, '.reversion').replace(/\\/g, '/'),
+      revisionFile = path.join(options.root, '.revision').replace(/\\/g, '/'),
       done = this.async();
 
     var repository = git(options.repository);
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
       // grunt.log.writeln(inspect(rev));
       localRevision = rev;
 
-      return getServerRevision(upyun, reversionFile);
+      return getServerRevision(upyun, revisionFile);
 
     }).then(function(rev){
       serverRevision = rev;
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
       }).then(function(values){
         grunt.log.writeln('Total uploaded files: ', values.length);
 
-        return updateRevisionFile(upyun, reversionFile, localRevision);
+        return updateRevisionFile(upyun, revisionFile, localRevision);
       });
 
     }).then(function(){
@@ -193,6 +193,7 @@ module.exports = function(grunt) {
     }
 
     function uploadFiles(upyun, repoPath, root, files, cleanpath) {
+      grunt.log.writeln(files.length, ' files need to upload.');
       files = files || [];
       var uploadPromises = _.map(files, function(file) {
         var up = when.defer();
@@ -223,6 +224,7 @@ module.exports = function(grunt) {
 
     function deleteFiles(upyun, repoPath, root, files, cleanpath) {
 
+      grunt.log.writeln(files.length, ' files need to delete.');
       files = files || [];
       var deletePromises = _.map(files, function(file) {
         var del = when.defer();
@@ -236,7 +238,7 @@ module.exports = function(grunt) {
         nodefn.call(upyun.deleteFile, remoteFilePath).then(function(){
           del.resolve(file);
         }).otherwise(function(err){
-       	  if(!err || (err && err.statusCode === 404)) {
+       	  if(!err || (err && err.statusCode == 404)) {
        	  	grunt.log.writeln('Deleted: ', file, ' => ', remoteFilePath);
             return del.resolve(file);
           }
