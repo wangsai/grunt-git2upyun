@@ -117,6 +117,10 @@ cleanpath:function(fullpath) {return fullpath.replace('ajax/lib/', '');}
 
 这样就能将默认路径修改为我们需要的结果了！
 
+## 实现原理
+
+每次将git仓库中的文件同步到又拍云之后都会自动生成一个 `.revision` 文件，用于保存同步文件时仓库当前的最新 commit revision（简称版本），并将此文件也上传到又拍云空间。下次同步时将会首先读取 `.revision` 文件中存放的 revision 值并与当前仓库的 HEAD revision 进行对比，列出两次revision之间修改、新增或删除的文件，然后将这些修改或新增的文件上传到又拍云，将删除的文件从又拍云上删除。
+
 ## 实际使用案例
 
 [Bootstrap中文网](http://www.bootcss.com)所维护的[开放CDN](http://open.bootcss.com)服务就是采用此Grunt插件将 cdnjs.com 的github仓库镜像到又拍云上，从而为国内用户提供更好的加速服务。
